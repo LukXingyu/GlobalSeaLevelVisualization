@@ -1,0 +1,12 @@
+{
+  "data_source": "Hong Kong Observatory (HKO)",
+  "station_code": "QUB",
+  "station_name": "Quarry Bay",
+  "data_url": "https://www.hko.gov.hk/en/cis/yearlyTide.htm?stn=QUB",
+  "api_endpoint": "https://www.hko.gov.hk/cis/aws/tide/yearly_TIDE.xml",
+  "download_date": "2025-09-18T16:32:25.811257",
+  "units": "meters above Chart Datum",
+  "note": "Tidal information from 1954 to 1985 are based on North Point tide gauge data. Mean Sea Levels are computed directly from on-site measurement data without any post data corrections including land settlement.",
+  "total_records": 71,
+  "year_range": "1954-2024"
+}

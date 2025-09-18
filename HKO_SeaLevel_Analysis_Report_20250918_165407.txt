@@ -1,0 +1,52 @@
+Hong Kong Observatory - Quarry Bay Station Sea Level Analysis Report
+======================================================================
+
+Report Generated: 2025-09-18 16:54:07
+Data Period: 1954-2024 (71 years)
+Station: Quarry Bay (QUB)
+
+BASIC STATISTICS
+--------------------
+Mean Sea Level Average: 1.415 m
+Standard Deviation: 0.055 m
+Maximum: 1.510 m (Year: 1954)
+Minimum: 1.280 m (Year: 1963)
+Range: 0.230 m
+
+TREND ANALYSIS
+--------------------
+Linear trend slope: 0.001580 m/year
+Rate of change: 0.02 cm/decade
+Total change over 71 years: 0.11 cm
+
+RECENT CHANGES (2020-2024)
+------------------------------
+2020: 1.470 m
+2021: 1.450 m
+2022: 1.500 m
+2023: 1.460 m
+2024: 1.490 m
+
+Change 2020-2024: 2.0 cm
+
+DECADAL AVERAGES
+--------------------
+1950s: 1.435 ± 0.072 m (6 years)
+1960s: 1.339 ± 0.030 m (10 years)
+1970s: 1.391 ± 0.024 m (10 years)
+1980s: 1.392 ± 0.032 m (10 years)
+1990s: 1.419 ± 0.049 m (10 years)
+2000s: 1.435 ± 0.039 m (10 years)
+2010s: 1.472 ± 0.023 m (10 years)
+2020s: 1.474 ± 0.021 m (5 years)
+
+DATA QUALITY
+---------------
+Total records: 71
+Complete tidal data: 64 years
+Data completeness: 100.0%
+Missing years: 0
+
+Note: Tidal information from 1954 to 1985 are based on North Point tide gauge data.
+Mean Sea Levels are computed directly from on-site measurement data without
+any post data corrections including land settlement.
