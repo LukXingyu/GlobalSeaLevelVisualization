@@ -4,22 +4,22 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.patches import Circle
 
-# 设置中文字体
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
+# Set font for better display
+plt.rcParams['font.sans-serif'] = ['Arial', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 def load_sea_level_data():
-    """加载海平面数据"""
+    """Load sea level data"""
     try:
         df = pd.read_csv('HKO_QUB_SeaLevel_Data_20250918_163225.csv')
         df = df.dropna(subset=['Mean_Sea_Level_m'])
         return df
     except FileNotFoundError:
-        print("未找到数据文件！")
+        print("Data file not found!")
         return None
 
 def create_animated_polar_chart():
-    """创建动画极坐标图"""
+    """Create animated polar chart"""
     df = load_sea_level_data()
     if df is None:
         return
@@ -27,70 +27,62 @@ def create_animated_polar_chart():
     years = df['Year'].values
     sea_levels = df['Mean_Sea_Level_m'].values
     
-    # 按10年一个轮回计算角度
-    # 每年在其所在的10年内的角度 (0到2π)
+    # Calculate angles based on 10-year cycles
+    # Each year's angle within its decade (0 to 2π)
     angles = []
-    decade_radii = []
+    radii = []
     
     for year, level in zip(years, sea_levels):
-        year_in_decade = year % 10  # 年份在年代内的位置 (0-9)
+        year_in_decade = year % 10  # Position within decade (0-9)
         angle = (year_in_decade / 10) * 2 * np.pi
         angles.append(angle)
         
-        # 半径 = 年代数 + 海平面调节
-        decade = int(year // 10) - 195  # 1950s=0, 1960s=1, ...
-        level_offset = (level - 1.35) * 5  # 海平面偏移调节
-        radius = decade + 1 + level_offset
-        decade_radii.append(radius)
+        # Radius = direct sea level height (scaled for better visibility)
+        # Scale from 1.28-1.51m to radius 1-5 for better visualization
+        min_level, max_level = sea_levels.min(), sea_levels.max()
+        radius = 1 + ((level - min_level) / (max_level - min_level)) * 4
+        radii.append(radius)
     
     angles = np.array(angles)
-    radii = np.array(decade_radii)
+    radii = np.array(radii)
     
-    # 创建图形
+    # Create figure
     fig, ax = plt.subplots(figsize=(14, 14), subplot_kw=dict(projection='polar'))
     
-    # 设置极坐标图样式
-    max_radius = int(years[-1] // 10) - 195 + 3  # 最大半径
-    ax.set_ylim(0, max_radius)
-    ax.set_title('香港海平面变化动画 (按10年轮回)\n角度=年代内年份，半径=年代+海平面', 
+    # Set polar chart style
+    ax.set_ylim(0, 6)
+    ax.set_title('Hong Kong Sea Level Animation (10-Year Cycles)\nAngle=Year in Decade, Radius=Sea Level Height', 
                  fontsize=16, pad=30)
     
-    # 设置角度标签 (年代内的年份: 0年、1年...9年)
-    angle_labels = [f'{i}年' for i in range(10)]
+    # Set angle labels (years within decade: Year 0, Year 1...Year 9)
+    angle_labels = [f'Year {i}' for i in range(10)]
     angle_positions = [(i / 10) * 360 for i in range(10)]
     ax.set_thetagrids(angle_positions, angle_labels)
     
-    # 添加年代圆圈标记
-    decade_colors = plt.cm.Set3(np.linspace(0, 1, 8))
-    decade_labels = []
-    decade_radii = []
-    for decade_num in range(8):  # 1950s到2020s
-        decade_year = 1950 + decade_num * 10
-        radius = decade_num + 1
-        if radius <= max_radius:
-            circle = Circle((0, 0), radius, fill=False, linestyle='--', 
-                           alpha=0.3, color=decade_colors[decade_num])
-            ax.add_patch(circle)
-            decade_labels.append(f'{decade_year}s')
-            decade_radii.append(radius)
+    # Add radius labels for sea level heights
+    min_level, max_level = sea_levels.min(), sea_levels.max()
+    radius_ticks = [1, 2, 3, 4, 5]
+    radius_labels = []
+    for r in radius_ticks:
+        # Convert radius back to actual sea level
+        actual_level = min_level + ((r - 1) / 4) * (max_level - min_level)
+        radius_labels.append(f'{actual_level:.2f}m')
     
-    # 设置半径标签
-    if decade_radii:
-        ax.set_rgrids(decade_radii, decade_labels)
+    ax.set_rgrids(radius_ticks, radius_labels)
     
-    # 初始化绘图元素
-    line, = ax.plot([], [], 'b-', linewidth=2, alpha=0.7, label='海平面连线')
+    # Initialize plot elements
+    line, = ax.plot([], [], 'b-', linewidth=2, alpha=0.7, label='Sea Level Connections')
     points = ax.scatter([], [], c=[], s=60, cmap='viridis', alpha=0.8, 
                        edgecolors='white', linewidth=1)
     
-    # 年份标签列表
+    # Year label list
     year_texts = []
     
-    # 添加起始点标记
-    start_point, = ax.plot([], [], 'ro', markersize=10, label=f'起点 ({years[0]}年)')
-    current_point, = ax.plot([], [], 'go', markersize=10, label='当前点')
+    # Add start and current point markers
+    start_point, = ax.plot([], [], 'ro', markersize=10, label=f'Start ({years[0]})')
+    current_point, = ax.plot([], [], 'go', markersize=10, label='Current Point')
     
-    # 添加信息文本
+    # Add info text
     info_text = ax.text(0.02, 0.98, '', transform=ax.transAxes, fontsize=12,
                        verticalalignment='top', bbox=dict(boxstyle='round', 
                        facecolor='wheat', alpha=0.8))
@@ -98,71 +90,72 @@ def create_animated_polar_chart():
     ax.legend(loc='upper left', bbox_to_anchor=(1.15, 1))
     
     def animate(frame):
-        """动画函数"""
+        """Animation function"""
         if frame == 0:
-            # 第一帧，只显示起始点
+            # First frame, only show starting point
             start_point.set_data([angles[0]], [radii[0]])
             current_point.set_data([], [])
             line.set_data([], [])
             points.set_offsets(np.empty((0, 2)))
             
-            # 清除之前的年份标签
+            # Clear previous year labels
             for text in year_texts:
                 text.remove()
             year_texts.clear()
             
-            info_text.set_text(f'起始年份: {years[0]}\n海平面: {sea_levels[0]:.3f}m\n年代: {int(years[0]//10)*10}s\n数据点: 1/{len(years)}')
+            info_text.set_text(f'Start Year: {years[0]}\nSea Level: {sea_levels[0]:.3f}m\nDecade: {int(years[0]//10)*10}s\nData Points: 1/{len(years)}')
             
         else:
-            # 显示从第一个点到当前点的连线
+            # Show connections from first point to current point
             current_idx = min(frame, len(years) - 1)
             
-            # 更新连线
+            # Update connections
             line_angles = angles[:current_idx + 1]
             line_radii = radii[:current_idx + 1]
             line.set_data(line_angles, line_radii)
             
-            # 更新所有已显示的点
+            # Update all displayed points
             if current_idx >= 0:
-                # 创建颜色映射（基于年代）
+                # Create color mapping (based on time progression)
                 colors = []
                 for i in range(current_idx + 1):
-                    decade = int(years[i] // 10) - 195
-                    colors.append(decade / 7)  # 归一化到0-1
+                    # Color based on year progression (0 to 1)
+                    color_val = (years[i] - years[0]) / (years[-1] - years[0])
+                    colors.append(color_val)
                 
                 offsets = np.column_stack([line_angles, line_radii])
                 points.set_offsets(offsets)
                 points.set_array(np.array(colors))
             
-            # 清除之前的年份标签
+            # Clear previous year labels
             for text in year_texts:
                 text.remove()
             year_texts.clear()
             
-            # 添加年份标签到每个点旁边
+            # Add year labels next to each point
             for i in range(current_idx + 1):
-                # 计算标签位置（稍微偏移避免重叠）
+                # Calculate label position (slightly offset to avoid overlap)
                 label_angle = angles[i]
                 label_radius = radii[i] + 0.15
                 
-                # 转换为笛卡尔坐标来放置文本
+                # Convert to Cartesian coordinates for text placement
                 x = label_radius * np.cos(label_angle - np.pi/2)
                 y = label_radius * np.sin(label_angle - np.pi/2)
                 
-                # 只显示每5年的标签，避免太拥挤
+                # Only show labels every 5 years to avoid crowding
                 if i == 0 or i == current_idx or years[i] % 5 == 0:
                     text = ax.text(label_angle, label_radius, f'{years[i]}', 
                                  ha='center', va='center', fontsize=8, 
                                  bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7))
                     year_texts.append(text)
             
-            # 更新当前点
+            # Update current point
             current_point.set_data([angles[current_idx]], [radii[current_idx]])
             
-            # 更新起始点
+            # Update start point
             start_point.set_data([angles[0]], [radii[0]])
             
-            # 更新信息文本
+            # Update info text
             current_year = years[current_idx]
             current_level = sea_levels[current_idx]
             current_decade = int(current_year // 10) * 10
@@ -170,36 +163,38 @@ def create_animated_polar_chart():
             progress = (current_idx + 1) / len(years) * 100
             
             info_text.set_text(
-                f'当前年份: {current_year}\n'
-                f'年代: {current_decade}s (第{year_in_decade}年)\n'
-                f'海平面: {current_level:.3f}m\n'
-                f'数据点: {current_idx + 1}/{len(years)}\n'
-                f'进度: {progress:.1f}%'
+                f'Current Year: {current_year}\n'
+                f'Decade: {current_decade}s (Year {year_in_decade})\n'
+                f'Sea Level: {current_level:.3f}m\n'
+                f'Radius: {radii[current_idx]:.2f}\n'
+                f'Data Points: {current_idx + 1}/{len(years)}\n'
+                f'Progress: {progress:.1f}%'
             )
         
         return [line, points, start_point, current_point, info_text] + year_texts
     
-    # 创建动画
-    # 总帧数 = 数据点数 + 停顿帧
-    total_frames = len(years) + 60  # 末尾停顿60帧
+    # Create animation
+    # Total frames = data points + pause frames
+    total_frames = len(years) + 60  # End pause 60 frames
     
     anim = animation.FuncAnimation(
-        fig, animate, frames=total_frames, interval=300,  # 每帧300ms，稍慢一些看清年份
+        fig, animate, frames=total_frames, interval=300,  # 300ms per frame, slower to see years clearly
         blit=False, repeat=True
     )
     
-    print(f"\n动画信息:")
-    print(f"数据范围: {years[0]}-{years[-1]} ({len(years)}年)")
-    print(f"海平面范围: {sea_levels.min():.3f}-{sea_levels.max():.3f}米")
-    print(f"总帧数: {total_frames}")
-    print(f"每帧时长: 300ms")
-    print(f"显示逻辑: 10年一个轮回，角度=年代内位置，半径=年代+海平面")
-    print(f"年份标签: 每5年显示一次 + 起点和终点")
+    print(f"\nAnimation Info:")
+    print(f"Data Range: {years[0]}-{years[-1]} ({len(years)} years)")
+    print(f"Sea Level Range: {sea_levels.min():.3f}-{sea_levels.max():.3f}m")
+    print(f"Total Frames: {total_frames}")
+    print(f"Frame Duration: 300ms")
+    print(f"Display Logic: 10-year cycles, angle=position in decade, radius=sea level height")
+    print(f"Radius Range: 1.00-5.00 (scaled from {sea_levels.min():.3f}-{sea_levels.max():.3f}m)")
+    print(f"Year Labels: Every 5 years + start and end points")
     
     plt.show()
 
 if __name__ == "__main__":
-    print("创建海平面动画...")
-    print("动画效果：10年一个轮回，角度=年代内年份，半径=年代+海平面")
-    print("年份标签：显示在每个点旁边")
+    print("Creating sea level animation...")
+    print("Animation effect: 10-year cycles, angle=year in decade, radius=sea level height")
+    print("Year labels: Displayed next to each point")
     create_animated_polar_chart()
