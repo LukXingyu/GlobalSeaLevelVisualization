@@ -30,36 +30,36 @@ An interactive data visualization project that crawls and analyzes sea level dat
 pip install -r requirements.txt
 ```
 
-### Run the Animation (Recommended)
+### 运行极坐标动画（推荐）
 ```bash
-python animated_sea_level.py
+python polarCoordVisualization.py
 ```
 
-This creates an animated polar chart showing:
-- **71 years of data** progressively connecting from start to end
-- **10-year cycle patterns** with intuitive angle/radius mapping
-- **Real-time information** displaying current year, sea level, and progress
-- **Interactive visualization** with pause and replay functionality
+该命令会生成一个极坐标动画图，展示：
+- **71年数据** 从起点到终点逐步连接
+- **10年周期模式**，角度/半径直观映射
+- **实时信息** 显示当前年份、海平面和进度
+- **可交互可视化** 支持暂停和重播
 
-### Alternative Analysis
+### 传统分析与数据爬取
 ```bash
-python visualize_sea_level_english.py  # Traditional charts
-python crawl_hko_sea_level.py          # Re-crawl latest data
+python seaLevelAnalysis.py            # 传统统计分析
+python crawl_hko_sea_level.py         # 重新爬取最新数据
 ```
 
 ## 📁 Project Structure
 
 ```
 GlobalSeaLevelVisualization/
-├── animated_sea_level.py              # Main animated visualization
-├── crawl_hko_sea_level.py             # Data crawler
-├── visualize_sea_level_english.py     # Traditional analysis
-├── requirements.txt                   # Dependencies
-├── README.md                          # This file
-├── .gitignore                         # Git ignore rules
-├── HKO_QUB_SeaLevel_Data_*.csv        # Complete dataset
-├── HKO_QUB_MeanSeaLevel_Simple_*.csv  # Simplified dataset
-└── HKO_QUB_SeaLevel_Metadata_*.json   # Data metadata
+├── polarCoordVisualization.py         # 极坐标动画主程序
+├── seaLevelAnalysis.py                # 传统分析
+├── crawl_hko_sea_level.py             # 数据爬虫
+├── requirements.txt                   # 依赖包
+├── README.md                          # 项目说明
+├── .gitignore                         # Git忽略规则
+├── HKO_QUB_SeaLevel_Data_*.csv        # 完整数据集
+├── HKO_QUB_MeanSeaLevel_Simple_*.csv  # 简化数据集
+└── HKO_QUB_SeaLevel_Metadata_*.json   # 数据元信息
 ```
 
 ## 🎨 Visualization Design
