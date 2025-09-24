@@ -87,7 +87,7 @@ def create_animated_polar_chart():
                        verticalalignment='top', bbox=dict(boxstyle='round', 
                        facecolor='wheat', alpha=0.8))
     
-    ax.legend(loc='upper left', bbox_to_anchor=(1.15, 1))
+    ax.legend(loc='center left', bbox_to_anchor=(1.25, 0.5))
     
     def animate(frame):
         """Animation function"""
